@@ -1,0 +1,62 @@
+
+
+
+version: "3.9"
+
+services:
+
+  mysqldb:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: bb
+      MYSQL_DATABASE: mysqldb
+    volumes:
+      - mysqldb:/var/lib/mysql
+    ports:
+      - "33060:3066"
+    networks:
+      - mysql_network
+  
+  admin:
+    image: adminer    
+    ports:      
+      - "8080:8080"
+    links:
+      - mysqldb
+    networks:
+      - mysql_network
+
+  dss:
+    build:
+      context: ./dss
+      dockerfile: Dockerfile
+    container_name: dataiku_app
+    depends_on:
+      - mysqldb
+    restart: always
+    ports:
+      - 10000:10000
+    links:
+      -  mysqldb
+    networks:
+      - mysql_network
+
+  spotify:
+    build:
+      context: ./data_request_app
+      dockerfile: Dockerfile
+    container_name: spotify_app
+    depends_on:
+      - mysqldb
+    links:
+      - mysqldb
+    networks:
+      - mysql_network
+
+volumes:
+   mysqldb:
+    name: mysqldb
+networks: 
+  mysql_network:
+    name: mysql_network

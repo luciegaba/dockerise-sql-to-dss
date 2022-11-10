@@ -1,0 +1,6 @@
+pandas
+requests
+regex
+mysql-connector-python
+sqlalchemy
+PyMySQL
